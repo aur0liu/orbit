@@ -27,11 +27,10 @@ def circle_data(x, y, radius, num_sides):
 
 
 
-def body_verts(x, y, radius, num_sides, WORLD_TO_SCREEN):
+def body_verts(radius, num_sides, WORLD_TO_SCREEN):
     num_verts = num_sides + 2 #need a centre point and the first point repeated (to draw final triangle)
 
-    x = WORLD_TO_SCREEN * x
-    y = WORLD_TO_SCREEN * y
+
     radius = WORLD_TO_SCREEN * radius
 
     TWO_PI = maths.pi * 2
@@ -40,12 +39,12 @@ def body_verts(x, y, radius, num_sides, WORLD_TO_SCREEN):
     circle_vertex_y = np.zeros(num_verts)
     circle_vertex_w = np.zeros(num_verts)
 
-    circle_vertex_x[0] = x
-    circle_vertex_y[0] = y
+    circle_vertex_x[0] = 0
+    circle_vertex_y[0] = 0
 
     for i in range(0, num_verts):
-        circle_vertex_x[i] = x + (radius * maths.cos(i * TWO_PI/num_sides))
-        circle_vertex_y[i] = y + (radius * maths.sin(i * TWO_PI/num_sides))
+        circle_vertex_x[i] =  (radius * maths.cos(i * TWO_PI/num_sides))
+        circle_vertex_y[i] =  (radius * maths.sin(i * TWO_PI/num_sides))
         circle_vertex_w[i] = 1.0
 
     circle_vertices_all = np.zeros((num_verts, 3))

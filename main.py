@@ -32,16 +32,17 @@ compile_shaders(program, 'vertex_code.glsl', 'fragment_code.glsl')
 
 # --------------------- INITIALISE SYSTEM STATE ---------------------
 #constants
-G = (6.674 * 10**11) * ((6 * 10**24)/(10**27))
+#G = (6.674 * 10**-11) * ((6 * 10**24)/(10**27)) #units m3 kg-1 s-2
     #real value         #scale factor
+G = 1
 #worldspace to screenspace multiplier
 WORLD_TO_SCREEN = 1/175
 #timestep
-dt = 1/60
+dt = 1
 
 
 class Body:
-    def __init__(self, mass, x, y, vx, vy, radius, num_sides, colour, rotate):
+    def __init__(self, mass, x, y, vx, vy, radius, num_sides, colour):
         self.mass: int = mass
         self.x = x
         self.y = y
@@ -51,18 +52,17 @@ class Body:
         self.radius = radius
         self.num_sides = num_sides
         self.colour = colour
-        self.rotate = rotate 
 
-        self.verts_raw = body_verts(self.x, self.y, self.radius, self.num_sides, 1)
-        self.verts_scaled = body_verts(self.x, self.y, self.radius, self.num_sides, WORLD_TO_SCREEN)
+        self.verts_raw = body_verts(self.radius, self.num_sides, 1)
+        self.verts_scaled = body_verts(self.radius, self.num_sides, WORLD_TO_SCREEN)
         
 
 
+planet = Body(100, 75, 0, 0, 0, 6, 30, (0.1,1,0.1,1))
+star = Body(100, -75, 0, 0, 0, 10, 80, (1,0.9,0,1))
+planet_muh = Body(100, 0, 75, 0, 0, 10, 80, (1,0,1,1))
 
-planet = Body(1, 150, 0, 0, 0, 6, 30, (0.1,1,0.1,1), 0)
-star = Body(333000, 0, 0, 0, 0, 10, 80, (1,0.9,0,1), 0)
-
-bodies = [planet, star]
+bodies = [planet, star, planet_muh]
 
 #determine initial velocity for stable orbit
 for body in bodies: #for each body calculate its initial velocity
@@ -70,12 +70,12 @@ for body in bodies: #for each body calculate its initial velocity
     total_vx = 0
     total_vy = 0
     for other in bodies: #caclulate force on body from every other body
-        if other != body and (body.mass/other.mass) < 0.01: #only calculate this if mass of body is much smaller than other body
+        if other != body: #and (body.mass/other.mass) < 0.01: #only calculate this if mass of body is much smaller than other body
             dx = other.x - body.x
             dy = other.y - body.y
             r = maths.sqrt(dx**2 + dy**2)
             
-            velocity += maths.sqrt((G*other.mass*body.mass)/r) #find velocity by equating gravitational force with required centripetal force
+            velocity += maths.sqrt((G*other.mass)/r) #find velocity by equating gravitational force with required centripetal force
             total_vx += velocity * (-dy/r) 
             total_vy += velocity * (dx/r)
     body.vx = total_vx 
@@ -148,31 +148,31 @@ while not glfw.window_should_close(window):
         acc_y = 0
 
         for other in bodies:
-            if other != body and (body.mass/other.mass) < 0.01:
+            if other != body: #and (body.mass/other.mass) < 0.01:
                 #calculate distance between bodies
                 dx = other.x - body.x
                 dy = other.y - body.y
-                print(f'dx: {dx}, dy: {dy}')
+                #print(f'dx: {dx}, dy: {dy}')
                 r = maths.sqrt(dx**2 + dy**2)
-                print(f'r:{r}')
+                #print(f'r:{r}')
 
                 #acceleration
                 acc = G * (other.mass)/(r**2)
-                print(f'acc:{acc}')
+                #print(f'acc:{acc}')
 
                 acc_x += acc * (dx/r) #using trig ratios rather than trig functions to calculate acc
                 acc_y += acc * (dy/r)
-                print(f'acc_x: {acc_x}, acc_y: {acc_y}')
+                #print(f'acc_x: {acc_x}, acc_y: {acc_y}')
                 
         #velocity
         body.vx += acc_x * dt #euler integration further pure yayyy
         body.vy += acc_y * dt
-        print(f'vx:{body.vx}, vy:{body.vy}')
+        #print(f'vx:{body.vx}, vy:{body.vy}')
         
         #position
         body.x += body.vx * dt
         body.y += body.vy * dt  
-        print(f'x:{body.x}, y:{body.y}') 
+        #print(f'x:{body.x}, y:{body.y}') 
 
 
         #calculate new matrix
@@ -184,11 +184,11 @@ while not glfw.window_should_close(window):
             ],
             dtype = np.float32
             )
-        print(matrix)
+        #print(matrix)
         
         #get uniform location for matrix
         uniform_loc = glGetUniformLocation(program, "matrix")
-        glUniformMatrix3fv(uniform_loc, 1, GL_FALSE, matrix)
+        glUniformMatrix3fv(uniform_loc, 1, GL_TRUE, matrix)
 
 
         #draw body
@@ -198,7 +198,7 @@ while not glfw.window_should_close(window):
 
         start_index += count
 
-    quit()
+    #quit()
     
 
     glfw.swap_buffers(window)
