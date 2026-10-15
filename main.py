@@ -4,8 +4,116 @@ import glfw
 from OpenGL.GL import *
 import numpy as np
 import math as maths
+import json
 
 from geo_funcs import *
+
+
+
+# --------------------- INITIALISE SYSTEM STATE ---------------------
+#constants
+#G = (6.674 * 10**-11) * ((6 * 10**24)/(10**27)) #units m3 kg-1 s-2
+    #real value         #scale factor
+G = 1
+#worldspace to screenspace multiplier
+WORLD_TO_SCREEN = 1/175
+#timestep
+dt = 1/10
+
+
+class Body:
+    def __init__(self, name, mass, x, y, vx, vy, radius, num_sides, colour):
+        self.name = name
+        self.mass = mass
+        self.x = x
+        self.y = y
+        self.vx = vx
+        self.vy = vy
+
+        self.radius = radius
+        self.num_sides = num_sides
+        self.colour = colour
+
+        self.verts_raw = body_verts(self.radius, self.num_sides, 1)
+        self.verts_scaled = body_verts(self.radius, self.num_sides, WORLD_TO_SCREEN)
+        
+bodies = []
+# user input
+more = True
+while more:
+
+    bodyType = input("Would you like to choose a default body or create a custom body? (any key for default, c for custom) ")
+
+    if bodyType == 'c':
+        name = input("Name your body: ")
+        mass = input("Input mass: ")
+        x = input("Input x position: ")
+        y = input("Input y position: ")
+        radius = input("Input radius: ")
+        colour = input("Input colour: ") #need input validation
+
+        body = Body(name, mass, x, y, 0, 0, radius, 50, colour)
+
+    else:
+        print("Default bodies:")
+        with open("default_bodies.json", "r") as f:
+            default_body_data = json.load(f)
+            print(default_body_data)
+        for body in default_body_data['bodies']:
+            print(f'{body['index']}. {body['name']} (mass = {body['mass']}, radius = {body['radius']})')
+
+        chosen_index = int(input("Enter number of chosen body: "))
+        chosen_body = default_body_data['bodies'][chosen_index - 1]
+        print(chosen_body)
+        body = Body(
+            chosen_body['name'],
+            chosen_body['mass'],
+            0,
+            0,
+            0,
+            0,
+            50,
+            50,
+            [0.5,0.5,0.5,1.0]
+        )
+        print(body.mass, body.name)
+        
+
+    bodies.append(body)
+
+    continu = input("Would you like to add another body y/n? ")
+
+    if continu == "n":
+        more = False
+
+    else:
+        more = True
+
+
+
+#determine initial velocity for stable orbit
+for body in bodies: #for each body calculate its initial velocity
+    velocity = 0
+    total_vx = 0
+    total_vy = 0
+    for other in bodies: #caclulate force on body from every other body
+        if other != body: #and (body.mass/other.mass) < 0.01: #only calculate this if mass of body is much smaller than other body
+            if body.x != other.x and body.y != other.y:
+                dx = other.x - body.x
+                dy = other.y - body.y
+                r = maths.sqrt(dx**2 + dy**2)
+            else:
+                dx = 0.001
+                dy = 0.001
+                r = 0.01
+            
+            velocity += maths.sqrt((G*other.mass)/r) #find velocity by equating gravitational force with required centripetal force
+            total_vx += velocity * (-dy/r) 
+            total_vy += velocity * (dx/r)
+    body.vx = total_vx 
+    body.vy = total_vy 
+    print(f'initial vx is {body.vx}, initial vy is {body.vy}')
+
 
 
 # --------------------- CREATE WINDOW CONTEXT ---------------------
@@ -30,58 +138,6 @@ program = glCreateProgram()
 compile_shaders(program, 'vertex_code.glsl', 'fragment_code.glsl')
 
 
-# --------------------- INITIALISE SYSTEM STATE ---------------------
-#constants
-#G = (6.674 * 10**-11) * ((6 * 10**24)/(10**27)) #units m3 kg-1 s-2
-    #real value         #scale factor
-G = 1
-#worldspace to screenspace multiplier
-WORLD_TO_SCREEN = 1/175
-#timestep
-dt = 1
-
-
-class Body:
-    def __init__(self, mass, x, y, vx, vy, radius, num_sides, colour):
-        self.mass: int = mass
-        self.x = x
-        self.y = y
-        self.vx = vx
-        self.vy = vy
-
-        self.radius = radius
-        self.num_sides = num_sides
-        self.colour = colour
-
-        self.verts_raw = body_verts(self.radius, self.num_sides, 1)
-        self.verts_scaled = body_verts(self.radius, self.num_sides, WORLD_TO_SCREEN)
-        
-
-
-planet = Body(100, 75, 0, 0, 0, 6, 30, (0.1,1,0.1,1))
-star = Body(100, -75, 0, 0, 0, 10, 80, (1,0.9,0,1))
-planet_muh = Body(100, 0, 75, 0, 0, 10, 80, (1,0,1,1))
-
-bodies = [planet, star, planet_muh]
-
-#determine initial velocity for stable orbit
-for body in bodies: #for each body calculate its initial velocity
-    velocity = 0
-    total_vx = 0
-    total_vy = 0
-    for other in bodies: #caclulate force on body from every other body
-        if other != body: #and (body.mass/other.mass) < 0.01: #only calculate this if mass of body is much smaller than other body
-            dx = other.x - body.x
-            dy = other.y - body.y
-            r = maths.sqrt(dx**2 + dy**2)
-            
-            velocity += maths.sqrt((G*other.mass)/r) #find velocity by equating gravitational force with required centripetal force
-            total_vx += velocity * (-dy/r) 
-            total_vy += velocity * (dx/r)
-    body.vx = total_vx 
-    body.vy = total_vy 
-    print(f'initial vx is {body.vx}, initial vy is {body.vy}')
-
 
 
 # --------------------- VBO/VAOS ---------------------
@@ -92,6 +148,8 @@ glBindBuffer(GL_ARRAY_BUFFER, vbo)
 #set the vertex array object 
 vao = glGenVertexArrays(1)
 glBindVertexArray(vao)
+
+
 
 
 # --------------------- BUILD DATA ---------------------
