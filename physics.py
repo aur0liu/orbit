@@ -2,7 +2,7 @@
 
 import math as maths
 
-from renderer import *
+from rendering_tools import *
 
 
 # --------------------- CONSTANTS ---------------------
@@ -11,13 +11,11 @@ from renderer import *
 #G = (6.674 * 10**-11) * ((6 * 10**24)/(10**27)) #units m3 kg-1 s-2
     #real value         #scale factor
 #G = (6.674 * 10**-11) #real value
-G = 1 #arbitrary units
 
-#worldspace to screenspace multiplier
-WORLD_TO_SCREEN = 1/175
+G               = 1         #gravitational constant (arbitrary units)
+WORLD_TO_SCREEN = 1/175     #worldspace to screenspace multiplier
+dt              = 1/10      #timestep
 
-#timestep
-dt = 1/10
 
 
 
@@ -36,6 +34,7 @@ class Body:
 
         self.verts_raw = body_verts(self.radius, self.num_sides, 1)
         self.verts_scaled = body_verts(self.radius, self.num_sides, WORLD_TO_SCREEN)
+
 
 
 
@@ -64,6 +63,8 @@ def initial_velocity(bodies, G):
         print(f'initial vx is {body.vx}, initial vy is {body.vy}')
 
     return bodies
+
+
 
 
 def euler_gravitation(body, bodies, G, dt):

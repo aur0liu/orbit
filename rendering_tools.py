@@ -1,4 +1,4 @@
-#this manages all of the openGL things 
+#all the opengl- rendering-related functions 
 
 import numpy as np
 import math as maths
@@ -49,7 +49,7 @@ def compile_shaders(program, vertex_file, frag_file):
 
 
 
-#initialises the graphics system - uses glfw to initialise the window; calls compile_shaders(); handles vao and vbo 
+#initialises the graphics system
 def initialise_gl():
     # --------------------- CREATE WINDOW CONTEXT ---------------------
     #initialise glfw, create core profile (modern) context
@@ -116,6 +116,25 @@ def body_verts(radius, num_sides, WORLD_TO_SCREEN):
 
 
     return circle_vertices_all
+
+
+
+
+#builds and uploads data
+def build_data(bodies):
+
+    #build data
+    data_list = []
+    for body in bodies:
+        data_send = np.zeros([body.num_sides + 2], [("position", np.float32, 3), ("colour", np.float32, 4)])
+        data_send['position'] = body.verts_scaled
+        data_send['colour'] = body.colour
+        data_list.append(data_send)
+
+    data = np.concatenate(data_list)
+
+    #upload CPU data to GPU buffer
+    glBufferData(GL_ARRAY_BUFFER, data.nbytes, data, GL_DYNAMIC_DRAW)
 
 
 

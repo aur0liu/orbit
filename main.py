@@ -1,16 +1,16 @@
 import glfw
-from OpenGL.GL import *
 import numpy as np
-import math as maths
 import json
+from   OpenGL.GL import *
 
 from rendering_tools import *
-from physics import *
+from physics         import *
 
 
-        
+window, program = initialise_gl()
+
+#user input        
 bodies = []
-# user input
 more = True
 while more:
 
@@ -93,42 +93,18 @@ while more:
         more = False
 
 
-
+#build and format data
 bodies = initial_velocity(bodies, G)
-
-window, program = initialise_gl()
-
-
-
-# --------------------- BUILD DATA ---------------------
-#make a template for the storage of the data in a zero matrix
-
-data_list = []
-for body in bodies:
-    data_send = np.zeros([body.num_sides + 2], [("position", np.float32, 3), ("colour", np.float32, 4)])
-    data_send['position'] = body.verts_scaled
-    data_send['colour'] = body.colour
-    data_list.append(data_send)
-
-data = np.concatenate(data_list)
-
-# --------------------- BUFFER ---------------------
-#upload CPU data to GPU buffer
-glBufferData(GL_ARRAY_BUFFER, data.nbytes, data, GL_DYNAMIC_DRAW)
-
-
-
+data = build_data(bodies)
 attribute_format(data, program)
 
 
-
-# --------------------- WINDOW LOOP ---------------------
+#window loop
 while not glfw.window_should_close(window):
     start_index = 0
 
     glClear(GL_COLOR_BUFFER_BIT)
     glfw.poll_events()
-    #set program as default program to be ran by GPU
     glUseProgram(program)
   
 
