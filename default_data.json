@@ -1,0 +1,37 @@
+{
+    "bodies": [
+        {
+            "name": "Earth", 
+            "mass": 597,
+            "radius": 0, 
+            "colour":[0,0.3,1.0,1.0]
+        },
+        {
+            "name": "Moon",
+            "mass": 7.35,
+            "radius": 0,
+            "colour":[0.2,0.2,0.2,0.8]
+        }
+    ],
+
+    "systems": [
+        {
+            "name": "Solar system",
+            "bodies": [
+                {
+                    "name": "Sun",
+                    "initial co-ordinates": [0,0]
+                },
+                {
+                    "name": "Earth",
+                    "initial co-ordinates": [0, 0.8]
+                },
+                {
+                    "name": "Moon",
+                    "initial co-ordinates": [0.05,0.75]
+                }
+            ]
+
+        }
+    ]
+}
