@@ -4,7 +4,7 @@ import numpy as np
 import math as maths
 import json
 
-from renderer import *
+from rendering_tools import *
 from physics import *
 
 
