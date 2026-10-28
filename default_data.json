@@ -1,37 +1,56 @@
 {
-    "bodies": [
-        {
-            "name": "Earth", 
-            "mass": 597,
-            "radius": 0, 
-            "colour":[0,0.3,1.0,1.0]
+    "bodies": {
+        "Sun": {
+            "mass": 198900000,
+            "radius": 50,
+            "colour": [
+                0.25,
+                0.5,
+                0,
+                0
+            ]
         },
-        {
-            "name": "Moon",
+        "Earth": {
+            "mass": 597,
+            "radius": 10,
+            "colour": [
+                0,
+                0.3,
+                1.0,
+                1.0
+            ]
+        },
+        "Moon": {
             "mass": 7.35,
-            "radius": 0,
-            "colour":[0.2,0.2,0.2,0.8]
+            "radius": 5,
+            "colour": [
+                0.2,
+                0.2,
+                0.2,
+                0.8
+            ]
         }
-    ],
-
+    },
     "systems": [
         {
-            "name": "Solar system",
+            "name": "Solar System",
             "bodies": [
                 {
                     "name": "Sun",
-                    "initial co-ordinates": [0,0]
+                    "x": 0,
+                    "y": 0
                 },
                 {
                     "name": "Earth",
-                    "initial co-ordinates": [0, 0.8]
+                    "x": 0,
+                    "y": 0.8
                 },
                 {
                     "name": "Moon",
-                    "initial co-ordinates": [0.05,0.75]
+                    "x": 0.05,
+                    "y": 0.75
                 }
             ]
-
         }
     ]
 }

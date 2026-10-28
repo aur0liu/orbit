@@ -2,12 +2,13 @@ import glfw
 import numpy as np
 import json
 from   OpenGL.GL import *
+import pygame
 
 from rendering_tools import *
 from physics         import *
 
 
-window, program = initialise_gl()
+
 
 #user input        
 bodies = []
@@ -72,25 +73,38 @@ while more:
         i = 1
         for system in default_data['systems']:
             print(f'#{i} {system['name']}')
-            
+
             for body in system['bodies']:
-                print(f'    - {body['name']}, initial position = {body['initial co-ordinates']}')
+                print(f'    - {body['name']}, initial position = [{body['x']}, {body['y']}]')
+
+            i += 1
             
-            chosen_index = int(input("Enter number of chosen system: "))
-            chosen_system = default_data['systems'][chosen_index - 1]
+        chosen_index = int(input("Enter number of chosen system: "))
+        chosen_system = default_data['systems'][chosen_index - 1]
 
-            for body in chosen_system:   
-                next_body = Body(body['name'], 
-                    body['mass'],
-                    x,y,
-                    0,0,50,50,
-                    body['colour']
-                )
+        for body in chosen_system['bodies']:   
 
-                bodies.append(next_body)
+            corresponding_body = default_data['bodies'][body['name']]
+
+            next_body = Body(body['name'], 
+                corresponding_body['mass'],
+                body['x'],body['y'],
+                0,0,
+                corresponding_body['radius'],
+                50,
+                corresponding_body['colour']
+            )
+
+            print(next_body)
+
+            bodies.append(next_body)
 
 
         more = False
+
+
+#initialise openGL and create window
+window, program = initialise_gl()
 
 
 #build and format data
@@ -112,7 +126,7 @@ while not glfw.window_should_close(window):
 
         euler_gravitation(body, bodies, G, dt)
 
-        render_body(body, program, WORLD_TO_SCREEN)
+        render_body(body, program, WORLD_TO_SCREEN, start_index)
 
 
     glfw.swap_buffers(window)

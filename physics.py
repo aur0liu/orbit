@@ -35,6 +35,8 @@ class Body:
         self.verts_raw = body_verts(self.radius, self.num_sides, 1)
         self.verts_scaled = body_verts(self.radius, self.num_sides, WORLD_TO_SCREEN)
 
+    def __str__(self):
+        return f"{self.name}  mass: {self.mass}  position: [{self.x},{self.y}]  radius: {self.radius}  colour: {self.colour} "
 
 
 

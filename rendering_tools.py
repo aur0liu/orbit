@@ -64,7 +64,7 @@ def initialise_gl():
     #make sure it knows where its rendering to
     glfw.make_context_current(window)
 
-    #set frame rate to vsync
+    #set frame rate to vsyn
     glfw.swap_interval(1)
 
     # --------------------- SHADERS ---------------------
@@ -119,7 +119,6 @@ def body_verts(radius, num_sides, WORLD_TO_SCREEN):
 
 
 
-
 #builds and uploads data
 def build_data(bodies):
 
@@ -136,6 +135,7 @@ def build_data(bodies):
     #upload CPU data to GPU buffer
     glBufferData(GL_ARRAY_BUFFER, data.nbytes, data, GL_DYNAMIC_DRAW)
 
+    return data
 
 
 
@@ -159,9 +159,9 @@ def attribute_format(data, program):
     glVertexAttribPointer(attrib_loc, 4, GL_FLOAT, GL_FALSE, stride, offset)
 
 
-
 #calculates the new transforming matrix and tells the shaders to draw the bodies each frame
-def render_body(body, program, WORLD_TO_SCREEN):
+def render_body(body, program, WORLD_TO_SCREEN, start_index):
+    
     #calculate new matrix
     matrix = np.array(
         [
