@@ -74,7 +74,7 @@ def euler_gravitation(body, bodies, G, dt):
     acc_y = 0
 
     for other in bodies:
-        if other != body: #and (body.mass/other.mass) < 0.01:
+        if other != body: 
             #calculate distance between bodies
             dx = other.x - body.x
             dy = other.y - body.y

@@ -1,9 +1,9 @@
 #all the opengl- rendering-related functions 
 
-import numpy as np
-import math as maths
-import glfw
-from OpenGL.GL import *
+import numpy     as     np
+import math      as     maths
+from   OpenGL.GL import *
+import pygame
 
 
 #what it says on the tin- compiles the shaders
@@ -50,22 +50,25 @@ def compile_shaders(program, vertex_file, frag_file):
 
 
 #initialises the graphics system
-def initialise_gl():
+def init():
+
+    #initialise pygame
+    pygame.init()
+
     # --------------------- CREATE WINDOW CONTEXT ---------------------
-    #initialise glfw, create core profile (modern) context
-    glfw.init()
-    glfw.window_hint(glfw.CONTEXT_VERSION_MAJOR, 3)
-    glfw.window_hint(glfw.CONTEXT_VERSION_MINOR, 3)
-    glfw.window_hint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE)
+    #create core profile (modern) context
+    pygame.display.gl_set_attribute(pygame.GL_CONTEXT_MAJOR_VERSION, 3)
+    pygame.display.gl_set_attribute(pygame.GL_CONTEXT_MINOR_VERSION, 3)
+    pygame.display.gl_set_attribute(pygame.GL_CONTEXT_PROFILE_MASK, pygame.GL_CONTEXT_PROFILE_CORE)
 
     #create window
-    window = glfw.create_window(800,800,"hi bob!",None,None)
+    pygame.display.set_caption("ORBIT")
+    display = (800, 800)
+    window = pygame.display.set_mode(display, pygame.DOUBLEBUF | pygame.OPENGL)
+    
+    #set frame rate to vsync
+    pygame.display.gl_set_attribute(pygame.GL_SWAP_CONTROL, 1)
 
-    #make sure it knows where its rendering to
-    glfw.make_context_current(window)
-
-    #set frame rate to vsyn
-    glfw.swap_interval(1)
 
     # --------------------- SHADERS ---------------------
     #request program and shader slots
