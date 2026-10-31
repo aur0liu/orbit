@@ -2,8 +2,6 @@
 
 import math as maths
 
-from rendering_tools import *
-
 
 # --------------------- CONSTANTS ---------------------
 
@@ -20,7 +18,7 @@ dt              = 1/10      #timestep
 
 
 class Body:
-    def __init__(self, name, mass, x, y, vx, vy, radius, num_sides, colour):
+    def __init__(self, name, mass, x, y, vx, vy, radius, colour):
         self.name = name
         self.mass = mass
         self.x = x
@@ -29,11 +27,8 @@ class Body:
         self.vy = vy
 
         self.radius = radius
-        self.num_sides = num_sides
         self.colour = colour
 
-        self.verts_raw = body_verts(self.radius, self.num_sides, 1)
-        self.verts_scaled = body_verts(self.radius, self.num_sides, WORLD_TO_SCREEN)
 
     def __str__(self):
         return f"{self.name}  mass: {self.mass}  position: [{self.x},{self.y}]  radius: {self.radius}  colour: {self.colour} "

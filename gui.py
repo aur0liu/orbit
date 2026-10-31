@@ -3,6 +3,20 @@
 import pygame
 
 
+def init_pygame():
+    #initialise pygame
+    pygame.init()
+    pygame.font.init()
+
+    #create window
+    pygame.display.set_caption("ORBIT")
+    display = (800, 800)
+    window = pygame.display.set_mode(display)
+
+    return window
+
+
+
 class TextButton:
     def __init__(self, button_text, pos, font):
         self.x = pos[0]
@@ -32,13 +46,12 @@ class TextButton:
                 self.display_text = self.font.render(self.text, True, self.colours['hover'])
 
 
-def get_font(size):
-    font = pygame.font.SysFont('Arial', size)
-    return font
-
 
 
 def main_menu(window):
+    TITLE_FONT = pygame.font.Font("assets/font/Kanit-Black.ttf" , 100)
+    TITLE_COLOUR = (0,0,0,0)
+
     running = True
     while running:
 
@@ -46,8 +59,12 @@ def main_menu(window):
             if event.type == pygame.QUIT:
                 running = False
                 pygame.quit()
+                quit()
         
         
-        mouse_pos = pygame.mouse.get_pos()
+        #mouse_pos = pygame.mouse.get_pos()
 
-        menu_title = get_font(100).render("ORBIT", True, "TITLE_COLOUR")
+        menu_title =  TITLE_FONT.render("ORBIT", True, TITLE_COLOUR)
+        title_rect = menu_title.get_rect(center = (400,400))
+
+        window.blit(menu_title, title_rect)
